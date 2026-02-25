@@ -4,22 +4,36 @@ import { motion } from 'framer-motion';
 
 const Section = styled.section`
   padding: 120px 20px;
-  background: var(--bg-color);
+  background: transparent;
   position: relative;
+
+  @media (max-width: 768px) {
+    padding: 92px 0;
+  }
 `;
 
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
 `;
 
 const Header = styled.div`
   text-align: center;
   margin-bottom: 80px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 42px;
+  }
 `;
 
 const Label = styled(motion.span)`
-  color: var(--accent-color);
+  color: #7deaff;
   font-weight: 600;
   letter-spacing: 2px;
   font-size: 0.9rem;
@@ -29,7 +43,7 @@ const Label = styled(motion.span)`
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 3rem;
+  font-size: 3.2rem;
   color: #fff;
   margin-bottom: 24px;
   font-family: var(--font-heading);
@@ -41,8 +55,8 @@ const Title = styled(motion.h2)`
 `;
 
 const Description = styled(motion.p)`
-  font-size: 1.2rem;
-  color: var(--text-secondary);
+  font-size: 1.14rem;
+  color: rgba(201, 213, 233, 0.85);
   line-height: 1.8;
   max-width: 700px;
   margin: 0 auto;
@@ -53,23 +67,56 @@ const Description = styled(motion.p)`
   }
 `;
 
+const MobileHint = styled.p`
+  display: none;
+  text-align: center;
+  color: rgba(171, 193, 227, 0.72);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  margin: -18px 0 16px;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
 
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
+  @media (max-width: 768px) {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(270px, 80vw);
+    gap: 14px;
+    overflow-x: auto;
+    padding: 4px 2px 10px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(150, 174, 216, 0.45);
+      border-radius: 999px;
+    }
   }
 `;
 
 const Card = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(162deg, rgba(15, 23, 38, 0.86), rgba(7, 12, 22, 0.94));
+  border: 1px solid var(--line-soft);
   border-radius: 24px;
   padding: 40px 30px;
   position: relative;
@@ -79,6 +126,7 @@ const Card = styled(motion.div)`
   flex-direction: column;
   align-items: center;
   text-align: center;
+  scroll-snap-align: center;
 
   &::before {
     content: '';
@@ -86,26 +134,45 @@ const Card = styled(motion.div)`
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: ${({ color }) => color || 'var(--gradient-main)'};
-    opacity: 0;
-    transition: opacity 0.4s ease;
+    height: 3px;
+    background: ${({ color }) => `linear-gradient(90deg, transparent, ${color || '#74e0ff'}, transparent)`};
+    opacity: 0.82;
+    transition: all 0.35s ease;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 0%, ${({ color }) => `${color || '#74e0ff'}2f`}, transparent 54%);
+    opacity: 0.5;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    border-color: ${({ color }) => `${color}66`};
+    transform: translateY(-9px);
+    box-shadow: 0 20px 38px rgba(0, 0, 0, 0.34), 0 10px 34px ${({ color }) => `${color}35`};
     
     &::before {
+      opacity: 1;
+      height: 4px;
+    }
+
+    &::after {
       opacity: 1;
     }
 
     .icon-wrapper {
-      transform: scale(1.1);
-      box-shadow: 0 0 20px ${({ color }) => color}40;
+      transform: scale(1.08);
+      box-shadow: 0 0 24px ${({ color }) => `${color}56`};
     }
+  }
+
+  @media (max-width: 768px) {
+    padding: 30px 22px;
+    min-height: 318px;
   }
 `;
 
@@ -113,14 +180,22 @@ const IconWrapper = styled.div`
   width: 70px;
   height: 70px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.2rem;
   margin-bottom: 24px;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(190, 211, 245, 0.22);
+
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    font-size: 1.9rem;
+    margin-bottom: 18px;
+  }
 `;
 
 const CardTitle = styled.h3`
@@ -128,13 +203,22 @@ const CardTitle = styled.h3`
   color: #fff;
   margin-bottom: 16px;
   font-family: var(--font-heading);
+
+  @media (max-width: 768px) {
+    font-size: 1.42rem;
+  }
 `;
 
 const CardText = styled.p`
-  color: var(--text-secondary);
+  color: rgba(193, 205, 224, 0.84);
   line-height: 1.7;
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   word-break: keep-all;
+
+  @media (max-width: 768px) {
+    font-size: 0.92rem;
+    line-height: 1.62;
+  }
 `;
 
 const pillars = [
@@ -165,6 +249,27 @@ const pillars = [
     desc: "다양한 폼팩터에 대응하는 유연한 UI설계와 백그라운드 프로세스 고도화를 통해 안정적이고 생동감 넘치는 서비스를 구현합니다.",
     color: "#ffb86c",
     delay: 0.8
+  },
+  {
+    title: "Web Design",
+    icon: "🎨",
+    desc: "복잡한 데이터도 직관적으로 이해할 수 있는 대시보드와 컴포넌트 중심의 확장형 디자인 시스템을 설계합니다.",
+    color: "#8e7bff",
+    delay: 1
+  },
+  {
+    title: "iOS Design",
+    icon: "🍏",
+    desc: "iOS 26 HIG 기반으로 서비스 디자인을 설계하고, Apple Watch 워치 UI와 홈 위젯 디자인까지 확장해 일관된 사용자 경험을 완성합니다.",
+    color: "#b28dff",
+    delay: 1.1
+  },
+  {
+    title: "Android Design",
+    icon: "📱",
+    desc: "정보 구조를 재정리하고 가이드를 통합해, 다양한 안드로이드 환경에서 명확하고 정돈된 사용자 흐름을 구축합니다.",
+    color: "#ff7fb7",
+    delay: 1.2
   }
 ];
 
@@ -195,9 +300,10 @@ const WhatWeBuild = () => {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            우리는 아이디어를 현실로 만들기 위해 4개의 핵심 파트가 협력하여 하나의 완전한 프로덕트를 탄생시킵니다.
+            우리는 아이디어를 현실로 만들기 위해 7개의 핵심 파트가 협력하여 하나의 완전한 프로덕트를 탄생시킵니다.
           </Description>
         </Header>
+        <MobileHint>모바일에서는 카드를 좌우로 넘겨 확인할 수 있습니다.</MobileHint>
         <Grid>
           {pillars.map((pillar, index) => (
             <Card

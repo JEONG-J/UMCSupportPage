@@ -1,23 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const hexToRgb = (hex) => {
+  const cleanHex = hex.replace('#', '');
+  if (cleanHex.length !== 6) return null;
+  return {
+    r: parseInt(cleanHex.slice(0, 2), 16),
+    g: parseInt(cleanHex.slice(2, 4), 16),
+    b: parseInt(cleanHex.slice(4, 6), 16)
+  };
+};
+
+const withAlpha = (hex, alpha) => {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return `rgba(255, 255, 255, ${alpha})`;
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+};
+
 const Section = styled.section`
   padding: 120px 20px 180px;
-  background: var(--bg-color);
+  background: transparent;
   position: relative;
-  overflow: hidden;
-`;
 
-const DarkOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #0b0f15;
-  pointer-events: none;
-  z-index: 0;
+  @media (max-width: 768px) {
+    padding: 96px 16px 120px;
+  }
 `;
 
 const Container = styled.div`
@@ -29,193 +37,510 @@ const Container = styled.div`
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 80px;
+  margin-bottom: 64px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 34px;
+  }
 `;
 
 const Label = styled(motion.span)`
-  color: rgba(102, 252, 241, 0.8);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 20px;
   display: inline-block;
+  color: #80e8ff;
+  font-size: 0.92rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 14px;
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 3.5rem;
+  font-size: 3.4rem;
   color: #fff;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   font-family: var(--font-heading);
   letter-spacing: -0.02em;
 
   @media (max-width: 768px) {
-    font-size: 2.5rem;
+    font-size: 2.35rem;
   }
 `;
 
 const Subtitle = styled(motion.p)`
-  color: #8b949e;
-  font-size: 1.1rem;
-  max-width: 600px;
+  color: rgba(206, 218, 241, 0.78);
+  font-size: 1.08rem;
+  max-width: 700px;
   margin: 0 auto;
-  line-height: 1.6;
-`;
+  line-height: 1.7;
+  word-break: keep-all;
 
-// Isometric Cover Flow Carousel Styles
-const CarouselContainer = styled(motion.div)`
-  perspective: 2000px;
-  position: relative;
-  height: 520px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  transform-style: preserve-3d;
-  
   @media (max-width: 768px) {
-    height: 480px;
+    font-size: 0.95rem;
   }
 `;
 
-const CarouselCard = styled(motion.div)`
-  position: absolute;
-  width: 340px;
-  height: 480px;
-  background: ${props => props.$isActive ? props.$color : '#12161c'}; /* Solid background to prevent overlap */
-  border: 1px solid ${props => props.$isActive ? 'transparent' : 'rgba(255, 255, 255, 0.05)'};
-  border-radius: 12px;
-  padding: 40px 30px;
-  cursor: grab;
-  box-shadow: ${props => props.$isActive ? `0 20px 50px ${props.$color}55` : '0 10px 30px rgba(0,0,0,0.6)'};
+const SectionHint = styled(motion.p)`
+  margin-top: 14px;
+  color: rgba(170, 190, 224, 0.78);
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
+`;
+
+const RailLayout = styled.div`
+  display: grid;
+  grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+  gap: 26px;
+  align-items: stretch;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+`;
+
+const RailNav = styled.div`
+  border-radius: 24px;
+  border: 1px solid var(--line-soft);
+  background: linear-gradient(155deg, rgba(14, 21, 36, 0.84), rgba(7, 12, 22, 0.92));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.26);
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
-  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
-  overflow: hidden;
+
+  @media (max-width: 768px) {
+    padding: 16px 14px;
+    border-radius: 18px;
+  }
+`;
+
+const RailTitle = styled.p`
+  color: rgba(196, 210, 236, 0.78);
+  font-size: 0.84rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-left: 8px;
+`;
+
+const RailList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 2px 10px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(160, 183, 221, 0.42);
+      border-radius: 999px;
+    }
+  }
+`;
+
+const RailStep = styled(motion.div)`
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  min-height: 56px;
+
+  @media (max-width: 768px) {
+    min-width: min(76vw, 248px);
+    grid-template-columns: 1fr;
+    gap: 0;
+    min-height: auto;
+    scroll-snap-align: center;
+  }
+`;
+
+const Marker = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MarkerDot = styled.div`
+  width: ${({ $isActive }) => ($isActive ? '12px' : '10px')};
+  height: ${({ $isActive }) => ($isActive ? '12px' : '10px')};
+  border-radius: 999px;
+  margin-top: 6px;
+  background: ${({ $visited, $color }) => ($visited ? $color : 'rgba(172, 187, 217, 0.4)')};
+  box-shadow: ${({ $isActive, $color }) => ($isActive ? `0 0 16px ${withAlpha($color, 0.75)}` : 'none')};
+  transition: all 0.25s ease;
+`;
+
+const MarkerLine = styled.div`
+  width: 2px;
+  flex: 1;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: ${({ $visited, $color }) => ($visited ? `linear-gradient(180deg, ${withAlpha($color, 0.9)}, ${withAlpha($color, 0.32)})` : 'rgba(151, 170, 205, 0.24)')};
+`;
+
+const RailButton = styled.button`
+  text-align: left;
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: ${({ $active, $color }) => ($active ? `linear-gradient(120deg, ${withAlpha($color, 0.2)}, ${withAlpha($color, 0.1)})` : 'transparent')};
+  border: 1px solid ${({ $active, $color }) => ($active ? withAlpha($color, 0.62) : 'transparent')};
+  transition: all 0.25s ease;
+
+  &:hover {
+    border-color: ${({ $color }) => withAlpha($color, 0.45)};
+    background: ${({ $color }) => withAlpha($color, 0.12)};
+    transform: translateX(2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(102, 252, 241, 0.6);
+    outline-offset: 2px;
+  }
 
   &:active {
-    cursor: grabbing;
+    transform: scale(0.99);
   }
 
   @media (max-width: 768px) {
-    width: 300px;
-    height: 440px;
-    padding: 30px 24px;
-  }
+    padding: 11px 12px;
 
-  /* Emphasis on active */
-  opacity: ${props => props.$isActive ? 1 : 0.4};
-  transition: opacity 0.4s ease, background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+    &:hover {
+      transform: none;
+    }
+  }
 `;
 
-const CardHeader = styled.div`
+const RailRow = styled.div`
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+`;
+
+const RailNum = styled.span`
+  color: ${({ $active, $color }) => ($active ? $color : 'rgba(166, 182, 209, 0.74)')};
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+  }
+`;
+
+const RailName = styled.span`
+  color: ${({ $active }) => ($active ? '#f7fbff' : 'rgba(203, 215, 236, 0.8)')};
+  font-size: 0.98rem;
+  font-weight: ${({ $active }) => ($active ? '700' : '600')};
+
+  @media (max-width: 768px) {
+    white-space: nowrap;
+    font-size: 0.92rem;
+  }
+`;
+
+const RailSub = styled.p`
+  color: ${({ $active }) => ($active ? 'rgba(219, 231, 250, 0.84)' : 'rgba(162, 180, 209, 0.72)')};
+  font-size: 0.88rem;
+  line-height: 1.45;
+  word-break: keep-all;
+
+  @media (max-width: 768px) {
+    font-size: 0.82rem;
+  }
+`;
+
+const DetailPanel = styled.article`
+  position: relative;
+  border-radius: 24px;
+  border: 1px solid ${({ $color }) => withAlpha($color, 0.55)};
+  background: linear-gradient(150deg, rgba(15, 23, 38, 0.92), rgba(8, 13, 24, 0.95));
+  box-shadow: 0 20px 48px ${({ $color }) => withAlpha($color, 0.2)};
+  overflow: hidden;
+  min-height: 490px;
+
+  @media (max-width: 1024px) {
+    min-height: 440px;
+  }
+
+  @media (max-width: 768px) {
+    min-height: 400px;
+    border-radius: 18px;
+  }
+`;
+
+const PanelGlow = styled.div`
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 70% 0%, ${({ $color }) => withAlpha($color, 0.26)}, transparent 56%);
+  pointer-events: none;
+`;
+
+const PanelBody = styled(motion.div)`
+  position: relative;
+  z-index: 1;
+  padding: 30px 32px 28px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  touch-action: pan-y;
+
+  @media (max-width: 768px) {
+    padding: 24px 22px;
+  }
+`;
+
+const PanelMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+`;
+
+const ValueBadge = styled.span`
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${({ $color }) => $color};
+  background: ${({ $color }) => withAlpha($color, 0.16)};
+  border: 1px solid ${({ $color }) => withAlpha($color, 0.38)};
+  border-radius: 999px;
+  padding: 7px 12px;
+`;
+
+const IndexText = styled.span`
+  font-size: 0.82rem;
+  color: rgba(192, 208, 233, 0.84);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+`;
+
+const PanelTitle = styled.h3`
+  color: #ffffff;
+  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+  word-break: keep-all;
+
+  @media (max-width: 768px) {
+    font-size: clamp(1.35rem, 6.4vw, 1.75rem);
+    line-height: 1.24;
+  }
+`;
+
+const PanelSubtitle = styled.p`
+  color: ${({ $color }) => withAlpha($color, 0.95)};
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
   margin-bottom: 20px;
 `;
 
-const CardNumber = styled.span`
-  font-family: var(--font-heading);
-  font-size: 2rem;
-  font-weight: 700;
-  color: ${props => props.$isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.2)'};
-  transition: color 0.4s ease;
+const PanelDesc = styled.p`
+  color: rgba(225, 235, 250, 0.9);
+  font-size: 1.04rem;
+  line-height: 1.75;
+  word-break: keep-all;
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+    line-height: 1.62;
+  }
 `;
 
-const ActiveContent = styled(motion.div)`
-  flex-grow: 1;
+const KeywordList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+`;
+
+const Keyword = styled.span`
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  color: rgba(225, 238, 255, 0.9);
+  border: 1px solid ${({ $color }) => withAlpha($color, 0.35)};
+  background: ${({ $color }) => withAlpha($color, 0.12)};
+`;
+
+const Controls = styled.div`
+  margin-top: auto;
+  padding-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+`;
+
+const DotRow = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  
-  p {
-    font-size: 1.35rem;
-    line-height: 1.7;
-    color: #fff;
-    font-weight: 600;
-    word-break: keep-all;
-    white-space: pre-line;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  }
-`;
-
-const InactiveContent = styled(motion.div)`
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding-bottom: 10px;
-`;
-
-const LargeIcon = styled.div`
-  font-size: 4.5rem;
-  margin-bottom: auto;
-  align-self: center;
-  filter: grayscale(100%) opacity(0.3);
-  transition: all 0.4s ease;
-
-  ${CarouselCard}:hover & {
-    filter: grayscale(0%) opacity(1);
-    transform: scale(1.1);
-  }
-`;
-
-const TitleEn = styled.h3`
-  font-size: 2rem;
-  font-family: var(--font-heading);
-  color: #fff;
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
-`;
-
-const TitleKo = styled.p`
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-weight: 500;
-`;
-
-const Indicators = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 60px;
-  position: relative;
-  z-index: 20;
+  gap: 8px;
 `;
 
 const Dot = styled.button`
-  width: 10px;
-  height: 10px;
+  width: ${({ $active }) => ($active ? '26px' : '9px')};
+  height: 9px;
+  border-radius: 999px;
+  background: ${({ $active }) => ($active ? 'linear-gradient(90deg, #66fcf1, #8fc9ff)' : 'rgba(255, 255, 255, 0.24)')};
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(102, 252, 241, 0.48)' : 'rgba(255, 255, 255, 0.15)')};
+  transition: all 0.2s ease;
+`;
+
+const ArrowControls = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const SwipeHint = styled.p`
+  margin-top: 10px;
+  color: rgba(171, 193, 227, 0.72);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const ArrowButton = styled.button`
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: none;
-  background: ${props => props.$active ? '#fff' : 'rgba(255, 255, 255, 0.2)'};
-  box-shadow: ${props => props.$active ? '0 0 10px rgba(255, 255, 255, 0.5)' : 'none'};
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  color: #e8f3ff;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   &:hover {
-    background: ${props => props.$active ? '#fff' : 'rgba(255, 255, 255, 0.5)'};
-    transform: scale(1.2);
+    background: rgba(102, 252, 241, 0.12);
+    border-color: rgba(102, 252, 241, 0.42);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 `;
 
 const visions = [
-  { id: 1, num: '01', color: '#FF5722', icon: '🎯', title: 'User-Centric', titleKo: '사용자 중심', desc: '모든 결정의 중심에는 항상 사용자가 있습니다.\n사용자 경험을 최우선으로 생각합니다.' },
-  { id: 2, num: '02', color: '#2962FF', icon: '📊', title: 'Data-Driven', titleKo: '데이터 기반', desc: '직관이 아닌 데이터에 기반하여\n객관적이고 정확한 의사결정을 내립니다.' },
-  { id: 3, num: '03', color: '#00C853', icon: '⚡️', title: 'Agile Execution', titleKo: '애자일 실행', desc: '완벽함보다는 빠른 실행과 피드백을 통한\n반복적인 개선을 추구합니다.' },
-  { id: 4, num: '04', color: '#FFB300', icon: '🤝', title: 'Collaborative', titleKo: '긴밀한 협업', desc: '서로 다른 전문성을 가진 팀원들의\n긴밀한 협업으로 시너지를 극대화합니다.' },
-  { id: 5, num: '05', color: '#651FFF', icon: '🧩', title: 'Problem Solving', titleKo: '문제 해결', desc: '표면적인 현상이 아닌 본질적인 문제를\n깊이 파고들어 창의적으로 해결합니다.' },
-  { id: 6, num: '06', color: '#00BCD4', icon: '✨', title: 'Continuous Polish', titleKo: '끝없는 다듬음', desc: '타협하지 않고 끊임없이 디테일을 다듬어\n프로덕트의 완성도를 높입니다.' },
-  { id: 7, num: '07', color: '#F50057', icon: '🌱', title: 'Sustainable', titleKo: '지속 가능한', desc: '단기적인 성과를 넘어 프로덕트와 팀의\n지속 가능한 성장을 목표로 합니다.' }
+  {
+    id: 1,
+    num: '01',
+    color: '#79C2FF',
+    icon: '🎯',
+    title: 'User Value First',
+    titleKo: '사용자 가치 최우선',
+    desc: '기능보다 문제 해결을 먼저 봅니다. 사용자가 실제로 더 편해지는 변화인지 끝까지 검증합니다.',
+    keywords: ['User Problem', 'Practical Value', 'Outcome']
+  },
+  {
+    id: 2,
+    num: '02',
+    color: '#5FD9B8',
+    icon: '🔍',
+    title: 'Clarity in Craft',
+    titleKo: '명확한 완성도',
+    desc: '복잡함을 단순하게 정리합니다. 정보 구조, 화면 흐름, 코드 구조를 모두 읽기 쉽게 다듬습니다.',
+    keywords: ['Clear UI', 'Readable Code', 'Consistency']
+  },
+  {
+    id: 3,
+    num: '03',
+    color: '#FFB86B',
+    icon: '⚡️',
+    title: 'Fast Experiment',
+    titleKo: '빠른 실험과 학습',
+    desc: '작게 만들고 빠르게 확인합니다. 실패 비용은 줄이고 학습 속도는 높여 더 나은 답에 빨리 도달합니다.',
+    keywords: ['Ship Fast', 'Validate Early', 'Learn Quickly']
+  },
+  {
+    id: 4,
+    num: '04',
+    color: '#A994FF',
+    icon: '🤝',
+    title: 'One Team, One Context',
+    titleKo: '열린 협업',
+    desc: '정보를 독점하지 않고 공유합니다. 직군을 넘어 같은 맥락에서 의사결정하고 실행합니다.',
+    keywords: ['Shared Context', 'Transparent Communication', 'Co-creation']
+  },
+  {
+    id: 5,
+    num: '05',
+    color: '#66E8FF',
+    icon: '🧩',
+    title: 'System Thinking',
+    titleKo: '구조적 문제 해결',
+    desc: '증상보다 원인을 봅니다. 단기 처방이 아닌 재발을 줄이는 시스템 단위 해결책을 설계합니다.',
+    keywords: ['Root Cause', 'System Design', 'Scalable Fix']
+  },
+  {
+    id: 6,
+    num: '06',
+    color: '#FF7CAD',
+    icon: '🎉',
+    title: 'Playful Product',
+    titleKo: '재미와 몰입',
+    desc: '일은 진지하게, 경험은 즐겁게 만듭니다. 작은 인터랙션과 감성적인 디테일로 사용자의 몰입을 높입니다.',
+    keywords: ['Delight', 'Immersive UX', 'Meaningful Motion']
+  },
+  {
+    id: 7,
+    num: '07',
+    color: '#8FE388',
+    icon: '🌱',
+    title: 'Sustainable Impact',
+    titleKo: '지속 가능한 임팩트',
+    desc: '단기 성과보다 오래가는 변화를 만듭니다. 팀과 프로덕트가 함께 건강하게 성장하는 구조를 지향합니다.',
+    keywords: ['Long-term Value', 'Healthy Process', 'Team Growth']
+  }
 ];
 
 const Vision = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const railItemRefs = useRef([]);
+
+  const activeVision = visions[activeIndex];
+
+  const goPrev = () => setActiveIndex((prev) => Math.max(prev - 1, 0));
+  const goNext = () => setActiveIndex((prev) => Math.min(prev + 1, visions.length - 1));
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -224,48 +549,39 @@ const Vision = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleDragEnd = (e, { offset, velocity }) => {
-    const swipeThreshold = 50;
-    if (offset.x < -swipeThreshold && activeIndex < visions.length - 1) {
-      setActiveIndex(prev => prev + 1);
-    } else if (offset.x > swipeThreshold && activeIndex > 0) {
-      setActiveIndex(prev => prev - 1);
+  useEffect(() => {
+    if (!isMobile) return;
+    const activeEl = railItemRefs.current[activeIndex];
+    if (activeEl) {
+      activeEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }, [activeIndex, isMobile]);
+
+  const handleKeyNavigation = (event) => {
+    if ((event.key === 'ArrowDown' || event.key === 'ArrowRight') && activeIndex < visions.length - 1) {
+      setActiveIndex((prev) => prev + 1);
+    }
+
+    if ((event.key === 'ArrowUp' || event.key === 'ArrowLeft') && activeIndex > 0) {
+      setActiveIndex((prev) => prev - 1);
     }
   };
 
-  const calculateTransform = (i) => {
-    const diff = i - activeIndex;
-    const absDiff = Math.abs(diff);
-    const direction = Math.sign(diff);
-
-    // Wider horizontal layout metrics
-    const xOffset = isMobile ? 160 : 340;
-    const xMultiplier = isMobile ? 50 : 110;
-
-    if (diff === 0) {
-      return {
-        x: 0,
-        z: 0,
-        rotateY: 0,
-        scale: 1,
-        opacity: 1,
-        zIndex: 10
-      };
+  const handlePanelDragEnd = (event, { offset, velocity }) => {
+    const swipeThreshold = 70;
+    if ((offset.x < -swipeThreshold || velocity.x < -420) && activeIndex < visions.length - 1) {
+      setActiveIndex((prev) => prev + 1);
+    } else if ((offset.x > swipeThreshold || velocity.x > 420) && activeIndex > 0) {
+      setActiveIndex((prev) => prev - 1);
     }
-
-    return {
-      x: direction * (xOffset + absDiff * xMultiplier),
-      z: -(absDiff * 120),
-      rotateY: direction * -40,
-      scale: 1 - (absDiff * 0.05),
-      opacity: absDiff > 2 ? 0 : 1, // Let CSS handle opacity damping
-      zIndex: 10 - absDiff
-    };
   };
 
   return (
     <Section id="visions">
-      <DarkOverlay />
       <Container>
         <Header>
           <Label
@@ -290,76 +606,128 @@ const Vision = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            본질적이고 깊이 있는 7가지 코어 밸류를 바탕으로, 압도적인 퀄리티의 프로덕트를 만듭니다.
+            실행력, 완성도, 협업, 그리고 재미까지. 우리 팀이 제품을 만드는 방식을 7가지 비전으로 정리했습니다.
           </Subtitle>
+          <SectionHint
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            각 비전을 눌러 상세 내용을 확인해보세요.
+          </SectionHint>
         </Header>
 
-        <CarouselContainer
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-        >
-          {visions.map((node, idx) => (
-            <CarouselCard
-              key={node.id}
-              $isActive={activeIndex === idx}
-              $color={node.color}
-              onClick={() => setActiveIndex(idx)}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragEnd={handleDragEnd}
-              initial={false}
-              animate={calculateTransform(idx)}
-              transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-            >
-              <CardHeader>
-                <CardNumber $isActive={activeIndex === idx}>{node.num}</CardNumber>
-              </CardHeader>
+        <RailLayout>
+          <RailNav
+            role="region"
+            aria-label="비전 레일"
+            tabIndex={0}
+            onKeyDown={handleKeyNavigation}
+          >
+            <RailTitle>Vision Rail</RailTitle>
+            <RailList>
+              {visions.map((vision, idx) => {
+                const isActive = idx === activeIndex;
+                const isVisited = idx <= activeIndex;
+                const isLast = idx === visions.length - 1;
 
-              <AnimatePresence mode="wait">
-                {activeIndex === idx ? (
-                  <ActiveContent
-                    key={`active-${node.id}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
+                return (
+                  <RailStep
+                    key={vision.id}
+                    ref={(el) => { railItemRefs.current[idx] = el; }}
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-80px' }}
+                    transition={{ duration: 0.35, delay: idx * 0.05 }}
                   >
-                    <p>{node.desc}</p>
-                  </ActiveContent>
-                ) : (
-                  <InactiveContent
-                    key={`inactive-${node.id}`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <LargeIcon>{node.icon}</LargeIcon>
-                    <div>
-                      <TitleEn>{node.title}</TitleEn>
-                      <TitleKo>{node.titleKo}</TitleKo>
-                    </div>
-                  </InactiveContent>
-                )}
-              </AnimatePresence>
-            </CarouselCard>
-          ))}
-        </CarouselContainer>
+                    <Marker>
+                      <MarkerDot
+                        $isActive={isActive}
+                        $visited={isVisited}
+                        $color={vision.color}
+                      />
+                      {!isLast && (
+                        <MarkerLine
+                          $visited={idx < activeIndex}
+                          $color={vision.color}
+                        />
+                      )}
+                    </Marker>
+                    <RailButton
+                      type="button"
+                      onClick={() => setActiveIndex(idx)}
+                      $active={isActive}
+                      $color={vision.color}
+                      aria-pressed={isActive}
+                    >
+                      <RailRow>
+                        <RailNum $active={isActive} $color={vision.color}>{vision.num}</RailNum>
+                        <RailName $active={isActive}>{vision.icon} {vision.title}</RailName>
+                      </RailRow>
+                      <RailSub $active={isActive}>{vision.titleKo}</RailSub>
+                    </RailButton>
+                  </RailStep>
+                );
+              })}
+            </RailList>
+          </RailNav>
 
-        <Indicators>
-          {visions.map((_, idx) => (
-            <Dot
-              key={idx}
-              $active={idx === activeIndex}
-              onClick={() => setActiveIndex(idx)}
-              aria-label={`Go to vision ${idx + 1}`}
-            />
-          ))}
-        </Indicators>
+          <DetailPanel $color={activeVision.color}>
+            <PanelGlow $color={activeVision.color} />
+            <AnimatePresence mode="wait">
+              <PanelBody
+                key={activeVision.id}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25 }}
+                drag={isMobile ? 'x' : false}
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.12}
+                onDragEnd={handlePanelDragEnd}
+              >
+                <PanelMeta>
+                  <ValueBadge $color={activeVision.color}>Vision</ValueBadge>
+                  <IndexText>{activeIndex + 1} / {visions.length}</IndexText>
+                </PanelMeta>
 
+                <PanelTitle>{activeVision.icon} {activeVision.title}</PanelTitle>
+                <PanelSubtitle $color={activeVision.color}>{activeVision.titleKo}</PanelSubtitle>
+                <PanelDesc>{activeVision.desc}</PanelDesc>
+
+                <KeywordList>
+                  {activeVision.keywords.map((keyword) => (
+                    <Keyword key={keyword} $color={activeVision.color}>{keyword}</Keyword>
+                  ))}
+                </KeywordList>
+
+                <Controls>
+                  <DotRow>
+                    {visions.map((_, idx) => (
+                      <Dot
+                        key={idx}
+                        $active={idx === activeIndex}
+                        onClick={() => setActiveIndex(idx)}
+                        aria-label={`Go to vision ${idx + 1}`}
+                      />
+                    ))}
+                  </DotRow>
+
+                  <ArrowControls>
+                    <ArrowButton onClick={goPrev} disabled={activeIndex === 0} aria-label="Previous vision">
+                      ‹
+                    </ArrowButton>
+                    <ArrowButton onClick={goNext} disabled={activeIndex === visions.length - 1} aria-label="Next vision">
+                      ›
+                    </ArrowButton>
+                  </ArrowControls>
+                </Controls>
+                <SwipeHint>모바일에서는 카드를 좌우로 스와이프할 수 있습니다.</SwipeHint>
+              </PanelBody>
+            </AnimatePresence>
+          </DetailPanel>
+        </RailLayout>
       </Container>
     </Section>
   );

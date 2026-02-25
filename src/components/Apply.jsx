@@ -4,76 +4,106 @@ import { motion } from 'framer-motion';
 
 const Section = styled.section`
   padding: 120px 20px;
-  background: var(--bg-color);
+  background: transparent;
   position: relative;
   text-align: center;
   overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(860px, 92%);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(120, 203, 255, 0.48), transparent);
+  }
 `;
 
 const Container = styled.div`
-  max-width: 900px;
+  max-width: 940px;
   margin: 0 auto;
-  padding: 80px 40px;
-  background: linear-gradient(180deg, rgba(30, 35, 45, 0.4) 0%, rgba(11, 12, 16, 0.8) 100%);
-  border: 1px solid rgba(102, 252, 241, 0.15);
-  border-radius: 40px;
+  padding: 86px 46px;
+  background: linear-gradient(162deg, rgba(13, 21, 36, 0.88), rgba(7, 12, 21, 0.95));
+  border: 1px solid var(--line-soft);
+  border-radius: 34px;
   position: relative;
-  z-index: 5;
+  z-index: 3;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(92, 169, 255, 0.2), transparent 56%);
+    pointer-events: none;
+  }
 
   @media (max-width: 768px) {
-    padding: 60px 20px;
-    border-radius: 30px;
+    padding: 62px 22px;
+    border-radius: 26px;
   }
 `;
 
 const GlowRing = styled(motion.div)`
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  border-radius: 40px;
-  box-shadow: 0 0 80px rgba(102, 252, 241, 0.1);
+  inset: 0;
+  border-radius: 34px;
+  box-shadow: 0 0 70px rgba(102, 188, 255, 0.12);
   z-index: -1;
   pointer-events: none;
-`;
-
-const Title = styled(motion.h2)`
-  font-size: 3rem;
-  color: #fff;
-  margin-bottom: 24px;
-  font-family: var(--font-heading);
-  position: relative;
-  z-index: 1;
-  word-break: keep-all;
 
   @media (max-width: 768px) {
-    font-size: 2rem;
+    border-radius: 26px;
   }
 `;
 
+const Label = styled(motion.span)`
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(129, 208, 255, 0.3);
+  background: rgba(98, 172, 255, 0.12);
+  color: #8deaff;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  text-transform: uppercase;
+`;
+
+const Title = styled(motion.h2)`
+  font-size: clamp(2.05rem, 4.2vw, 3.35rem);
+  color: #fff;
+  margin-bottom: 22px;
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+  word-break: keep-all;
+`;
+
 const Text = styled(motion.p)`
-  font-size: 1.3rem;
-  color: var(--text-secondary);
-  margin-bottom: 50px;
-  line-height: 1.6;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  color: rgba(202, 215, 238, 0.84);
+  margin-bottom: 44px;
+  line-height: 1.72;
   position: relative;
   z-index: 1;
   word-break: keep-all;
 
   @media (max-width: 768px) {
-    font-size: 1.1rem;
-    margin-bottom: 40px;
+    margin-bottom: 34px;
   }
 `;
 
 const ButtonGroup = styled(motion.div)`
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 13px;
   position: relative;
   z-index: 10;
 `;
@@ -82,10 +112,10 @@ const ApplyButton = styled.a`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 18px 40px;
-  background-color: #ffffff;
-  color: #121212;
-  font-size: 1.2rem;
+  padding: 16px 36px;
+  background: linear-gradient(120deg, #f5f9ff, #def2ff);
+  color: #111827;
+  font-size: 1.12rem;
   font-weight: 700;
   border-radius: 50px;
   text-decoration: none;
@@ -94,23 +124,28 @@ const ApplyButton = styled.a`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 30px rgba(115, 194, 255, 0.4);
   }
-  
+
   svg {
     transition: transform 0.3s ease;
   }
-  
+
   &:hover svg {
     transform: translateX(4px);
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 320px;
   }
 `;
 
 const StatusText = styled.div`
-  color: #ffb86c;
-  font-size: 1.1rem;
+  color: #ffd38a;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03em;
 `;
 
 const Apply = () => {
@@ -119,10 +154,19 @@ const Apply = () => {
       <Container>
         <GlowRing
           animate={{
-            boxShadow: ['0 0 60px rgba(102, 252, 241, 0.1)', '0 0 120px rgba(102, 252, 241, 0.2)', '0 0 60px rgba(102, 252, 241, 0.1)']
+            boxShadow: ['0 0 60px rgba(102, 188, 255, 0.14)', '0 0 110px rgba(102, 252, 241, 0.2)', '0 0 60px rgba(102, 188, 255, 0.14)']
           }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         />
+
+        <Label
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          Final Call
+        </Label>
 
         <Title
           initial={{ opacity: 0, y: 20 }}
@@ -130,7 +174,7 @@ const Apply = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          UMC Product Team과 함께하시겠습니까?
+          이제, UMC Product와 함께할 시간입니다.
         </Title>
 
         <Text
@@ -139,7 +183,9 @@ const Apply = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          우리의 비전에 공감하고 가슴 뛰는 도전을 즐길 준비가 되었다면 지금 바로 지원하세요.
+          여기까지 읽으셨다면 준비는 끝났습니다.
+          <br />
+          UMC Product에서 다음 변화를 함께 만들어요.
         </Text>
 
         <ButtonGroup

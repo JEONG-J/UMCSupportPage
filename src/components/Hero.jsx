@@ -10,7 +10,7 @@ const Section = styled.section`
   justify-content: center;
   text-align: center;
   padding: calc(128px + env(safe-area-inset-top)) 20px 96px;
-  background: radial-gradient(circle at 50% 40%, rgba(20, 20, 30, 1) 0%, #000 70%);
+  background: transparent;
   position: relative;
   overflow: hidden;
 
@@ -31,7 +31,7 @@ const Section = styled.section`
 
 const Content = styled.div`
   width: 100%;
-  max-width: 1120px;
+  max-width: 980px;
   margin: 0 auto;
   z-index: 5;
   position: relative;
@@ -39,6 +39,11 @@ const Content = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  padding: 0 20px;
+
+  @media (max-width: 768px) {
+    padding: 0 4px;
+  }
 `;
 
 const LogoContainer = styled(motion.div)`
@@ -64,13 +69,13 @@ const LogoContainer = styled(motion.div)`
 const Badge = styled(motion.span)`
   display: inline-block;
   padding: 8px 18px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(100, 175, 255, 0.12);
   color: #d4d8e2;
   border-radius: 50px;
   font-size: clamp(0.92rem, 1.2vw, 1.05rem);
   font-weight: 550;
   margin-bottom: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(133, 203, 255, 0.3);
   letter-spacing: 0.06em;
 
   @media (max-width: 768px) {
@@ -91,7 +96,7 @@ const Title = styled(motion.h1)`
   word-break: keep-all;
   
   span {
-    background: linear-gradient(90deg, #6699ff, #9e66ff);
+    background: linear-gradient(95deg, #88b6ff, #66fcf1 45%, #7399ff);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -114,7 +119,7 @@ const Title = styled(motion.h1)`
 
 const Subtitle = styled(motion.p)`
   font-size: clamp(1.08rem, 1.6vw, 1.4rem);
-  color: #c5c6c7;
+  color: rgba(219, 229, 245, 0.9);
   max-width: 760px;
   line-height: 1.72;
   word-break: keep-all;
@@ -131,6 +136,53 @@ const Subtitle = styled(motion.p)`
     font-size: 0.94rem;
     max-width: 100%;
     line-height: 1.54;
+  }
+`;
+
+const SchedulePanel = styled(motion.div)`
+  margin-top: 12px;
+  width: min(740px, 100%);
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(134, 205, 255, 0.28);
+  background: linear-gradient(145deg, rgba(16, 29, 48, 0.64), rgba(9, 16, 30, 0.82));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  text-align: left;
+
+  @media (max-width: 768px) {
+    margin-top: 20px;
+    padding: 14px 14px;
+    border-radius: 14px;
+  }
+`;
+
+const ScheduleTitle = styled.p`
+  color: #8deaff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+`;
+
+const ScheduleRow = styled.p`
+  color: rgba(223, 235, 252, 0.92);
+  font-size: 0.96rem;
+  line-height: 1.55;
+  word-break: keep-all;
+
+  strong {
+    color: #ffffff;
+    margin-right: 8px;
+  }
+
+  & + & {
+    margin-top: 4px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.88rem;
+    line-height: 1.5;
   }
 `;
 
@@ -154,8 +206,8 @@ const ApplyButton = styled.a`
   align-items: center;
   justify-content: center;
   padding: 18px 42px;
-  background-color: #ffffff;
-  color: #121212;
+  background: linear-gradient(120deg, #f4f8ff, #dff5ff);
+  color: #101827;
   font-size: 1.2rem;
   font-weight: 700;
   border-radius: 50px;
@@ -165,7 +217,7 @@ const ApplyButton = styled.a`
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 32px rgba(128, 206, 255, 0.35);
   }
   
   svg {
@@ -185,7 +237,7 @@ const ApplyButton = styled.a`
 `;
 
 const StatusText = styled.div`
-  color: #ffb86c;
+  color: #ffd38a;
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -202,7 +254,7 @@ const CenterGlow = styled.div`
   transform: translate(-50%, -50%);
   width: min(72vw, 860px);
   height: min(72vw, 860px);
-  background: radial-gradient(circle, rgba(102, 153, 255, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(102, 175, 255, 0.28) 0%, transparent 72%);
   filter: blur(88px);
   z-index: 0;
   pointer-events: none;
@@ -218,7 +270,6 @@ const Hero = () => {
   return (
     <Section>
       <CenterGlow />
-
       <Content>
         <LogoContainer
           initial={{ opacity: 0, scale: 0.8 }}
@@ -263,7 +314,9 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          흩어진 도구들은 하나로, 반복되는 업무는 자동으로. 동아리가 온전히 성장에만 집중할 수 있도록.
+          흩어진 도구들은 하나로, 반복되는 업무는 자동으로.
+          <br />
+          동아리가 온전히 성장에만 집중할 수 있도록.
         </Subtitle>
 
         <ButtonGroup
@@ -282,6 +335,15 @@ const Hero = () => {
             </svg>
           </ApplyButton>
           <StatusText>모집 중!</StatusText>
+          <SchedulePanel
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.88 }}
+          >
+            <ScheduleTitle>2기 진행 일정</ScheduleTitle>
+            <ScheduleRow><strong>모집</strong> 2026년 2월 26일(목) - 3월 1일(일)</ScheduleRow>
+            <ScheduleRow><strong>서류 평가</strong> 2026년 3월 2일(월) - 3월 7일(토)</ScheduleRow>
+          </SchedulePanel>
         </ButtonGroup>
       </Content>
     </Section>

@@ -20,23 +20,12 @@ const withAlpha = (hex, alpha) => {
 
 const Section = styled.section`
   padding: 120px 20px 150px;
-  background:
-    radial-gradient(circle at 18% 12%, rgba(57, 120, 255, 0.1), transparent 38%),
-    radial-gradient(circle at 85% 78%, rgba(16, 219, 164, 0.1), transparent 42%),
-    var(--bg-color);
+  background: transparent;
   position: relative;
   overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 90px 90px;
-    mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
-    pointer-events: none;
+  @media (max-width: 768px) {
+    padding: 96px 16px 120px;
   }
 `;
 
@@ -50,6 +39,10 @@ const Container = styled.div`
 const Header = styled.div`
   text-align: center;
   margin-bottom: 52px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 36px;
+  }
 `;
 
 const Title = styled(motion.h2)`
@@ -151,6 +144,10 @@ const CarouselContainer = styled(motion.div)`
   @media (max-width: 768px) {
     height: 510px;
   }
+
+  @media (max-width: 480px) {
+    height: 492px;
+  }
 `;
 
 const CarouselCard = styled(motion.article)`
@@ -162,6 +159,7 @@ const CarouselCard = styled(motion.article)`
   border-radius: 24px;
   padding: 30px 34px 34px;
   cursor: grab;
+  touch-action: pan-y;
   box-shadow: ${({ $isActive, $color }) => ($isActive ? `0 22px 55px ${withAlpha($color, 0.3)}` : '0 12px 30px rgba(0, 0, 0, 0.55)')};
   display: flex;
   flex-direction: column;
@@ -235,17 +233,28 @@ const CarouselCard = styled(motion.article)`
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     position: relative;
     z-index: 1;
+    overflow-y: auto;
+    padding-right: 6px;
+
+    &::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(166, 186, 220, 0.4);
+      border-radius: 999px;
+    }
   }
 
   li {
     color: ${({ $isActive }) => ($isActive ? 'rgba(239, 244, 255, 0.92)' : 'rgba(204, 214, 232, 0.76)')};
-    font-size: 1.02rem;
+    font-size: 0.95rem;
     padding-left: 24px;
     position: relative;
-    line-height: 1.58;
+    line-height: 1.5;
     word-break: keep-all;
 
     &::before {
@@ -261,8 +270,8 @@ const CarouselCard = styled(motion.article)`
     }
 
     @media (max-width: 768px) {
-      font-size: 0.95rem;
-      line-height: 1.52;
+      font-size: 0.9rem;
+      line-height: 1.45;
     }
   }
 `;
@@ -352,46 +361,59 @@ const ArrowButton = styled.button`
   }
 `;
 
+const SwipeHint = styled.p`
+  margin-top: 10px;
+  text-align: center;
+  color: rgba(171, 193, 227, 0.72);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
 const sprintData = {
   dev: [
     {
       title: '💻 Web Sprint',
       color: '#2962FF',
       items: [
-        'React/Vue 기반의 SPA 아키텍처 설계',
-        '컴포넌트 단위의 UI 구현 및 상태 관리',
-        '서버 API 연동 및 비동기 통신 처리',
-        '배포 파이프라인(CI/CD) 구축 및 최적화'
-      ]
-    },
-    {
-      title: '⚙️ Server Sprint',
-      color: '#00C853',
-      items: [
-        'RESTful API 설계 및 명세서 작성',
-        '관계형/비관계형 데이터베이스 스키마 설계',
-        'Spring Boot/Node.js 기반의 비즈니스 로직 구현',
-        '보안(JWT, OAuth) 및 성능 최적화(Caching)'
+        '컴포넌트 단위의 재사용성 높은 아키텍처를 설계하고, 효율적인 상태 관리를 주도하실 분',
+        '명확한 프론트엔드 코드 컨벤션을 확립하고, 체계적인 Git/PR 워크플로우를 구축하실 분'
       ]
     },
     {
       title: '🍎 iOS Sprint',
       color: '#FF5722',
       items: [
-        'iOS 최신 패러다임 기반 개발 및 기술 스택 적용',
-        '애플 워치 연동 및 홈 화면 위젯 개발',
-        '유지보수와 확장을 고려한 모듈화 개발',
-        'TestFlight를 통한 배포 및 QA 진행'
+        'iOS 26에서 공개된 Apple의 새로운 디자인 언어를 실제 프로덕트에 적용하실 분',
+        '빛과 환경에 반응하는 반투명 소재감, GlassEffect, 머티리얼 시스템을 직접 설계·구현하실 분',
+        '기능 단위로 분리된 Tuist 기반 멀티 모듈 구조에서 빌드 최적화와 의존성 설계를 경험하실 분',
+        '위젯, Live Activity, watchOS까지 확장되는 Apple 생태계 경험을 구현하실 분'
       ]
     },
     {
       title: '🤖 Android Sprint',
       color: '#00BCD4',
       items: [
-        'Jetpack Compose / XML 기반의 모듈러 아키텍처를 통한 개발',
-        'Material Design 가이드를 준수하는 UI 구현',
-        'Retrofit, Room 등 필수 라이브러리 활용',
-        'Google Play Store 배포 준비 및 테스트'
+        'Hilt 및 Clean Architecture 기반의 재사용성 높은 코드를 설계하고, 지속 가능한 유지보수 구조를 구축하실 분',
+        '다양한 디바이스에 최적화된 적응형 UI와 사용자 중심의 매끄러운 워크플로우를 설계하실 분',
+        '팀 전체가 활용 가능한 공통 컴포넌트를 개발하고 기술 가이드라인을 명확히 제시하실 분',
+        '명확한 Issue 발행과 PR 작성으로 체계적이고 신뢰 중심의 협업 프로세스에 참여하실 분'
+      ]
+    },
+    {
+      title: '⚙️ Server Sprint',
+      color: '#00C853',
+      items: [
+        '적절한 로깅 및 모니터링을 통해 자동화된 서버 리소스 관리 시스템을 구축해보고 싶으신 분',
+        'k6 기반 성능/부하 테스트로 병목 지점을 파악하고 AWS 클라우드 인프라의 최적 인스턴스를 선정해보고 싶으신 분',
+        'RBAC · ABAC 기반으로 복잡한 권한 및 관리 체계를 설계하고 개선해보고 싶으신 분',
+        '실사용자가 있는 서비스에서 마이그레이션 및 점진적 개선을 함께 경험하고 싶으신 분',
+        '헥사고날 아키텍처를 실무에 적용해보고 싶으신 분',
+        '팀 컨벤션을 존중하며 코드 스타일, Issue · PR 규칙을 준수해 협업하실 수 있는 분'
       ]
     }
   ],
@@ -400,30 +422,32 @@ const sprintData = {
       title: '💻 Web Design Sprint',
       color: '#FFB300',
       items: [
-        '데스크탑 및 모바일 웹 뷰에 최적화된 반응형 UI 설계',
-        '그리드 시스템 및 웹 타이포그래피 활용',
-        '웹 접근성 및 브라우저 호환성 고려',
-        '인터랙션 및 마이크로 애니메이션 기획'
+        '복잡한 데이터를 한눈에 파악할 수 있는 직관적이고 심플한 대시보드 UI/UX에 관심이 많으신 분',
+        '컴포넌트 기반의 확장 가능한 디자인 시스템을 구축하고, 세세한 디자인 가이드라인 문서화를 실천하실 분'
       ]
     },
     {
       title: '🍎 iOS Design Sprint',
       color: '#651FFF',
       items: [
-        'Apple Human Interface Guidelines(HIG) 이해',
-        'iOS 특화 네비게이션 및 컴포넌트 활용',
-        '동적인 화면 전환 및 제스처 기반 인터랙션 기획',
-        '개발자와의 에셋 핸드오프 패키징'
+        'iOS 26에서 공개된 Apple의 새로운 디자인 언어를 깊이 이해하고, 실제 서비스에 자연스럽게 적용하실 분',
+        '빛과 배경에 반응하는 반투명 레이어, GlassEffect, 머티리얼 시스템을 활용해 공간감 있는 UI를 설계하실 분',
+        '전환 애니메이션, 버튼 반응, 스크롤 인터랙션까지 포함한 부드러운 사용자 경험을 설계하실 분',
+        '카드, 모달, 네비게이션 등 모든 요소가 하나의 공간 안에서 유기적으로 연결되도록 구조를 설계하실 분',
+        '위젯, Live Activity, watchOS까지 확장되는 Apple 생태계 전반의 경험을 일관되게 디자인하실 분',
+        '컬러, 타이포그래피, 여백, 모서리 곡률 등 세부 요소까지 정리하여 디자인 시스템을 구축하실 분'
       ]
     },
     {
       title: '🤖 Android Design Sprint',
       color: '#F50057',
       items: [
-        'Google Material Design 3 시스템 이해',
-        '안드로이드 폼팩터 다양성을 고려한 레이아웃',
-        '시스템 UI(상태바, 네비게이션바)와의 통합',
-        '명확한 피드백을 위한 애니메이션/트랜지션 기획'
+        '현재 서비스의 UI를 분석하고 문제점을 도출하여, 더 직관적이고 정돈된 화면으로 개선하실 분',
+        '복잡한 정보 구조를 재정리하여 사용자가 더 빠르게 이해할 수 있는 인터페이스로 리디자인하실 분',
+        '기존 컴포넌트의 일관성을 점검하고, 통일된 디자인 가이드로 정비하실 분',
+        '홈 화면에서 핵심 정보를 명확하게 전달할 수 있는 Android 위젯을 설계하실 분',
+        '작은 위젯 영역 안에서도 정보의 우선순위를 정리하고 가독성을 극대화하실 분',
+        '위젯과 앱 본 화면 간의 흐름을 자연스럽게 연결하여 일관된 사용자 경험을 설계하실 분'
       ]
     }
   ]
@@ -610,6 +634,7 @@ const Sprints = () => {
             ›
           </ArrowButton>
         </ArrowControls>
+        <SwipeHint>모바일에서는 카드를 좌우로 넘겨 스프린트를 탐색하세요.</SwipeHint>
 
       </Container>
     </Section>
