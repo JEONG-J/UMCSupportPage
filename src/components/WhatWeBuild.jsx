@@ -514,7 +514,7 @@ const WhatWeBuild = () => {
             >
               <CardMeta>
                 <PartBadge color={pillar.color}>Part</PartBadge>
-                <PartIndex>{String(index + 1).padStart(2, '0')} / {pillars.length}</PartIndex>
+                <PartIndex>{index + 1} / {pillars.length}</PartIndex>
               </CardMeta>
               <IconWrapper className="icon-wrapper">
                 {pillar.icon}
@@ -563,7 +563,7 @@ const WhatWeBuild = () => {
                 >
                   <CardMeta>
                     <PartBadge color={activePillar.color}>Part</PartBadge>
-                    <PartIndex>{String(pillars.findIndex((item) => item.title === activePillar.title) + 1).padStart(2, '0')} / {pillars.length}</PartIndex>
+                    <PartIndex>{pillars.findIndex((item) => item.title === activePillar.title) + 1} / {pillars.length}</PartIndex>
                   </CardMeta>
                   <IconWrapper className="icon-wrapper">
                     {activePillar.icon}

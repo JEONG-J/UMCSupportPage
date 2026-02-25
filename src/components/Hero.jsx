@@ -46,62 +46,34 @@ const Content = styled.div`
   }
 `;
 
-const StatusStrip = styled(motion.div)`
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: ${({ $top }) => ($top ? '12px' : '10px')};
-  width: ${({ $top }) => ($top ? 'min(760px, 100%)' : 'min(880px, 100%)')};
-  margin-top: ${({ $top }) => ($top ? '0' : '24px')};
-  margin-bottom: ${({ $top }) => ($top ? '16px' : '0')};
-
-  @media (min-width: 769px) {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    width: ${({ $top }) => ($top ? 'min(760px, 100%)' : 'min(980px, 100%)')};
-  }
-
-  @media (max-width: 768px) {
-    margin-top: ${({ $top }) => ($top ? '0' : '16px')};
-    margin-bottom: ${({ $top }) => ($top ? '10px' : '0')};
-  }
-`;
-
-const StatusBadge = styled.span`
+const JoinBadge = styled.span`
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
+  gap: 8px;
+  padding: 7px 12px;
   border-radius: 999px;
-  padding: ${({ $top }) => ($top ? '9px 18px' : '10px 16px')};
-  border: 1px solid ${({ $join }) => ($join ? 'rgba(99, 241, 226, 0.48)' : 'rgba(142, 211, 255, 0.35)')};
-  background: ${({ $join }) => ($join ? 'linear-gradient(120deg, rgba(9, 33, 56, 0.86), rgba(12, 26, 47, 0.9))' : 'rgba(16, 31, 54, 0.7)')};
+  border: 1px solid rgba(99, 241, 226, 0.48);
+  background: linear-gradient(120deg, rgba(9, 33, 56, 0.86), rgba(12, 26, 47, 0.9));
   color: #eaf3ff;
-  font-size: ${({ $top }) => ($top ? '0.84rem' : '0.88rem')};
-  letter-spacing: ${({ $top }) => ($top ? '0.02em' : '0.01em')};
+  font-size: 0.76rem;
   font-weight: 700;
-  min-height: 48px;
-  width: ${({ $top }) => ($top ? 'min(560px, 100%)' : 'auto')};
-  text-align: center;
+  letter-spacing: 0.01em;
 
   strong {
     color: #66fcf1;
-    font-size: ${({ $top }) => ($top ? '0.88rem' : '0.95rem')};
-    min-width: ${({ $top }) => ($top ? '76px' : '0')};
   }
 
   @media (max-width: 768px) {
-    width: 100%;
-    min-height: 44px;
-    font-size: ${({ $top }) => ($top ? '0.8rem' : '0.84rem')};
-    padding: ${({ $top }) => ($top ? '9px 12px' : '9px 14px')};
-
-    strong {
-      min-width: 0;
-      font-size: ${({ $top }) => ($top ? '0.84rem' : '0.9rem')};
-    }
+    font-size: 0.82rem;
+    padding: 7px 12px;
   }
+`;
+
+const JoinBadgeRow = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
 `;
 
 const LiveDot = styled.span`
@@ -352,21 +324,6 @@ const ScrollDot = styled.span`
   }
 `;
 
-const scheduleRows = [
-  {
-    title: '모집',
-    value: '2026년 2월 26일(목) - 3월 1일(일)'
-  },
-  {
-    title: '서류 평가',
-    value: '2026년 3월 2일(월) - 3월 6일(금)'
-  },
-  {
-    title: '합격 발표',
-    value: '2026년 3월 7일(토) 14시'
-  }
-]
-
 const Hero = () => {
   const [showScrollGuide, setShowScrollGuide] = useState(true);
 
@@ -439,31 +396,6 @@ const Hero = () => {
           동아리가 온전히 성장에만 집중할 수 있도록.
         </Subtitle>
 
-        <StatusStrip
-          $top
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55 }}
-        >
-          {scheduleRows.map((row) => (
-            <StatusBadge $top key={row.title}>
-              <strong>{row.title}</strong> {row.value}
-            </StatusBadge>
-          ))}
-        </StatusStrip>
-
-        <StatusStrip
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55 }}
-        >
-          <StatusBadge $join>
-            <LiveDot />
-            <strong>모집 중</strong>
-            UMC Product 2기 지금 합류하세요
-          </StatusBadge>
-        </StatusStrip>
-
         <ButtonGroup
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -480,6 +412,15 @@ const Hero = () => {
             </svg>
           </PrimaryButton>
         </ButtonGroup>
+
+        <JoinBadgeRow>
+          <JoinBadge>
+            <LiveDot />
+            <strong>모집 중</strong>
+            UMC Product 2기 지금 합류하세요
+          </JoinBadge>
+        </JoinBadgeRow>
+
         {showScrollGuide && (
           <ScrollGuide
             type="button"
