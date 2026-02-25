@@ -4,36 +4,47 @@ import { motion } from 'framer-motion';
 import productLogo from '../assets/productLogo.png';
 
 const Section = styled.section`
-  min-height: 100vh;
+  min-height: 112vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 120px 20px 60px;
+  padding: calc(128px + env(safe-area-inset-top)) 20px 96px;
   background: radial-gradient(circle at 50% 40%, rgba(20, 20, 30, 1) 0%, #000 70%);
   position: relative;
   overflow: hidden;
 
+  @media (max-width: 1024px) {
+    min-height: 105vh;
+    padding: calc(108px + env(safe-area-inset-top)) 20px 80px;
+  }
+
   @media (max-width: 768px) {
-    padding: 100px 20px 40px;
-    min-height: 80vh;
+    min-height: 100svh;
+    padding: calc(88px + env(safe-area-inset-top)) 18px calc(56px + env(safe-area-inset-bottom));
+  }
+
+  @media (max-width: 480px) {
+    padding: calc(78px + env(safe-area-inset-top)) 16px calc(48px + env(safe-area-inset-bottom));
   }
 `;
 
 const Content = styled.div`
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1120px;
   margin: 0 auto;
   z-index: 5;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 2px;
 `;
 
 const LogoContainer = styled(motion.div)`
-  width: 130px;
+  width: clamp(132px, 11vw, 186px);
   height: auto;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   position: relative;
   z-index: 10;
   
@@ -43,25 +54,36 @@ const LogoContainer = styled(motion.div)`
     object-fit: contain;
     filter: drop-shadow(0 0 30px rgba(102, 153, 255, 0.4));
   }
+
+  @media (max-width: 768px) {
+    width: clamp(110px, 28vw, 146px);
+    margin-bottom: 14px;
+  }
 `;
 
 const Badge = styled(motion.span)`
   display: inline-block;
-  padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #ccc;
+  padding: 8px 18px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #d4d8e2;
   border-radius: 50px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  margin-bottom: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  letter-spacing: 1px;
+  font-size: clamp(0.92rem, 1.2vw, 1.05rem);
+  font-weight: 550;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  letter-spacing: 0.06em;
+
+  @media (max-width: 768px) {
+    font-size: 0.84rem;
+    padding: 7px 14px;
+    margin-bottom: 14px;
+  }
 `;
 
 const Title = styled(motion.h1)`
-  font-size: 4rem;
-  line-height: 1.1;
-  margin-bottom: 16px;
+  font-size: clamp(3.2rem, 8.2vw, 5.5rem);
+  line-height: 1.04;
+  margin-bottom: 18px;
   letter-spacing: -0.02em;
   font-family: var(--font-heading);
   font-weight: 800;
@@ -75,39 +97,66 @@ const Title = styled(motion.h1)`
     color: transparent;
   }
 
+  @media (max-width: 1024px) {
+    font-size: clamp(3rem, 9vw, 4.6rem);
+  }
+
   @media (max-width: 768px) {
-    font-size: 2.5rem;
+    font-size: clamp(2.35rem, 12vw, 3.35rem);
+    margin-bottom: 14px;
+    letter-spacing: -0.018em;
+  }
+
+  @media (max-width: 480px) {
+    font-size: clamp(2.05rem, 11.8vw, 2.6rem);
   }
 `;
 
 const Subtitle = styled(motion.p)`
-  font-size: 1.1rem;
+  font-size: clamp(1.08rem, 1.6vw, 1.4rem);
   color: #c5c6c7;
-  max-width: 600px;
-  line-height: 1.6;
+  max-width: 760px;
+  line-height: 1.72;
   word-break: keep-all;
+  padding: 0 8px;
 
   @media (max-width: 768px) {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    max-width: 94%;
+    line-height: 1.58;
+    padding: 0;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.94rem;
+    max-width: 100%;
+    line-height: 1.54;
   }
 `;
 
 const ButtonGroup = styled(motion.div)`
-  margin-top: 45px;
+  margin-top: 54px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+
+  @media (max-width: 768px) {
+    margin-top: 36px;
+    gap: 12px;
+    width: 100%;
+    max-width: 340px;
+  }
 `;
 
 const ApplyButton = styled.a`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 16px 36px;
+  padding: 18px 42px;
   background-color: #ffffff;
   color: #121212;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 700;
   border-radius: 50px;
   text-decoration: none;
@@ -126,13 +175,24 @@ const ApplyButton = styled.a`
   &:hover svg {
     transform: translateX(4px);
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    font-size: 1.05rem;
+    padding: 15px 24px;
+    gap: 6px;
+  }
 `;
 
 const StatusText = styled.div`
   color: #ffb86c;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: 0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 0.98rem;
+  }
 `;
 
 const CenterGlow = styled.div`
@@ -140,16 +200,17 @@ const CenterGlow = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
+  width: min(72vw, 860px);
+  height: min(72vw, 860px);
   background: radial-gradient(circle, rgba(102, 153, 255, 0.2) 0%, transparent 70%);
-  filter: blur(80px);
+  filter: blur(88px);
   z-index: 0;
   pointer-events: none;
 
   @media (max-width: 768px) {
-    width: 300px;
-    height: 300px;
+    width: min(95vw, 520px);
+    height: min(95vw, 520px);
+    filter: blur(54px);
   }
 `;
 
@@ -202,8 +263,7 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          흩어진 도구들은 하나로, 반복되는 업무는 자동으로.<br />
-          동아리가 온전히 성장에만 집중할 수 있도록.
+          흩어진 도구들은 하나로, 반복되는 업무는 자동으로. 동아리가 온전히 성장에만 집중할 수 있도록.
         </Subtitle>
 
         <ButtonGroup

@@ -2,11 +2,42 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const hexToRgb = (hex) => {
+  const cleanHex = hex.replace('#', '');
+  if (cleanHex.length !== 6) return null;
+  return {
+    r: parseInt(cleanHex.slice(0, 2), 16),
+    g: parseInt(cleanHex.slice(2, 4), 16),
+    b: parseInt(cleanHex.slice(4, 6), 16)
+  };
+};
+
+const withAlpha = (hex, alpha) => {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return `rgba(255, 255, 255, ${alpha})`;
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+};
+
 const Section = styled.section`
   padding: 120px 20px 150px;
-  background: var(--bg-color);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(57, 120, 255, 0.1), transparent 38%),
+    radial-gradient(circle at 85% 78%, rgba(16, 219, 164, 0.1), transparent 42%),
+    var(--bg-color);
   position: relative;
   overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 90px 90px;
+    mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
+    pointer-events: none;
+  }
 `;
 
 const Container = styled.div`
@@ -18,58 +49,97 @@ const Container = styled.div`
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 52px;
 `;
 
 const Title = styled(motion.h2)`
-  font-size: 3.5rem;
+  font-size: 3.4rem;
   color: #fff;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   font-family: var(--font-heading);
   letter-spacing: -0.02em;
 
   @media (max-width: 768px) {
-    font-size: 2.5rem;
+    font-size: 2.35rem;
+  }
+`;
+
+const Subtitle = styled(motion.p)`
+  color: rgba(229, 233, 242, 0.74);
+  font-size: 1.08rem;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.75;
+  word-break: keep-all;
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 `;
 
 const TabContainer = styled.div`
-  display: flex;
+  width: fit-content;
+  display: inline-flex;
   justify-content: center;
   gap: 16px;
-  margin-bottom: 60px;
+  margin: 0 auto 60px;
+  padding: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
   position: relative;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    width: 100%;
+    max-width: 420px;
+  }
 `;
 
 const Tab = styled.button`
-  background: ${props => props.active ? 'rgba(102, 252, 241, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
-  border: 1px solid ${props => props.active ? 'rgba(102, 252, 241, 0.5)' : 'rgba(255, 255, 255, 0.1)'};
-  color: ${props => props.active ? '#fff' : '#8b949e'};
-  padding: 14px 32px;
+  background: ${({ $active }) => ($active ? 'linear-gradient(120deg, rgba(73, 221, 248, 0.2), rgba(84, 130, 255, 0.22))' : 'transparent')};
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(108, 207, 255, 0.55)' : 'rgba(255, 255, 255, 0.08)')};
+  color: ${({ $active }) => ($active ? '#fff' : '#94a5bf')};
+  padding: 13px 30px;
   border-radius: 50px;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
+  min-width: 160px;
 
   &:hover {
-    background: rgba(102, 252, 241, 0.1);
+    background: rgba(102, 252, 241, 0.12);
     color: #fff;
   }
 
-  ${props => props.active && `
-    box-shadow: 0 0 20px rgba(102, 252, 241, 0.2);
+  &:focus-visible {
+    outline: 2px solid rgba(102, 252, 241, 0.7);
+    outline-offset: 2px;
+  }
+
+  ${({ $active }) => $active && `
+    box-shadow: 0 10px 26px rgba(56, 199, 246, 0.24);
   `}
+
+  @media (max-width: 768px) {
+    flex: 1;
+    min-width: unset;
+    font-size: 0.92rem;
+    padding: 12px 18px;
+  }
 `;
 
-// Isometric Cover Flow Carousel Styles
 const CarouselContainer = styled(motion.div)`
-  perspective: 2000px; /* Increased for a flatter, wider look */
+  perspective: 1900px;
   position: relative;
-  height: 520px;
+  height: 540px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -79,52 +149,83 @@ const CarouselContainer = styled(motion.div)`
   transform-style: preserve-3d;
   
   @media (max-width: 768px) {
-    height: 480px;
+    height: 510px;
   }
 `;
 
-const CarouselCard = styled(motion.div)`
+const CarouselCard = styled(motion.article)`
   position: absolute;
-  width: 380px;
-  height: 480px;
-  background: ${props => props.$isActive ? props.$color : '#0a0c10'}; /* Solid dark background to prevent text overlap */
-  border: 1px solid ${props => props.$isActive ? 'transparent' : 'rgba(255, 255, 255, 0.05)'};
+  width: clamp(280px, 31vw, 390px);
+  height: 490px;
+  background: linear-gradient(145deg, rgba(16, 20, 31, 0.96), rgba(6, 9, 15, 0.94));
+  border: 1px solid ${({ $isActive, $color }) => ($isActive ? withAlpha($color, 0.58) : 'rgba(255, 255, 255, 0.08)')};
   border-radius: 24px;
-  padding: 40px;
+  padding: 30px 34px 34px;
   cursor: grab;
-  box-shadow: ${props => props.$isActive ? `0 20px 50px ${props.$color}55` : '0 10px 30px rgba(0,0,0,0.6)'};
+  box-shadow: ${({ $isActive, $color }) => ($isActive ? `0 22px 55px ${withAlpha($color, 0.3)}` : '0 12px 30px rgba(0, 0, 0, 0.55)')};
   display: flex;
   flex-direction: column;
-  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, ${({ $color }) => withAlpha($color, 0.26)}, transparent 58%);
+    opacity: ${({ $isActive }) => ($isActive ? 1 : 0.35)};
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, ${({ $color }) => withAlpha($color, 0.2)}, ${({ $color }) => $color}, ${({ $color }) => withAlpha($color, 0.2)});
+    opacity: ${({ $isActive }) => ($isActive ? 1 : 0.45)};
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
 
   &:active {
     cursor: grabbing;
   }
 
-  /* Z-index bump when active */
-  ${props => props.$isActive && `
+  ${({ $isActive }) => $isActive && `
     z-index: 20 !important;
   `}
 
   @media (max-width: 768px) {
-    width: 320px;
-    height: 450px;
-    padding: 30px 20px;
+    width: min(86vw, 360px);
+    height: 468px;
+    padding: 26px 24px 28px;
   }
 
-  /* Dim inactive text to emphasize focus and depth */
-  opacity: ${props => props.$isActive ? 1 : 0.4};
-  transition: opacity 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0.72)};
 
   h3 {
     color: #fff;
-    font-size: 1.5rem;
-    margin-bottom: 30px;
+    font-size: clamp(1.34rem, 2.7vw, 1.74rem);
+    margin-bottom: 26px;
     display: flex;
     align-items: center;
     gap: 12px;
     font-family: var(--font-heading);
-    letter-spacing: 0.5px;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+
+    @media (max-width: 768px) {
+      font-size: clamp(1.22rem, 5.4vw, 1.44rem);
+      margin-bottom: 20px;
+    }
   }
 
   ul {
@@ -134,49 +235,120 @@ const CarouselCard = styled(motion.div)`
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
   }
 
   li {
-    color: #c9d1d9;
-    font-size: 1.05rem;
+    color: ${({ $isActive }) => ($isActive ? 'rgba(239, 244, 255, 0.92)' : 'rgba(204, 214, 232, 0.76)')};
+    font-size: 1.02rem;
     padding-left: 24px;
     position: relative;
-    line-height: 1.5;
+    line-height: 1.58;
+    word-break: keep-all;
 
     &::before {
-      content: '✦';
-      color: #66fcf1;
+      content: '';
       position: absolute;
-      left: 0;
-      top: 2px;
-      font-size: 0.9rem;
+      left: 4px;
+      top: 10px;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: ${({ $color }) => $color};
+      box-shadow: ${({ $color }) => `0 0 12px ${withAlpha($color, 0.75)}`};
+    }
+
+    @media (max-width: 768px) {
+      font-size: 0.95rem;
+      line-height: 1.52;
     }
   }
 `;
 
+const CardMeta = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+`;
+
+const TrackBadge = styled.span`
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${({ $color }) => $color};
+  background: ${({ $color }) => withAlpha($color, 0.16)};
+  border: 1px solid ${({ $color }) => withAlpha($color, 0.36)};
+  border-radius: 999px;
+  padding: 7px 12px;
+`;
+
+const SlideIndex = styled.span`
+  font-size: 0.8rem;
+  color: rgba(190, 205, 228, 0.85);
+  letter-spacing: 0.04em;
+  font-weight: 600;
+`;
+
 const Indicators = styled.div`
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   margin-top: 40px;
   position: relative;
   z-index: 20;
 `;
 
 const Dot = styled.button`
-  width: 10px;
+  width: ${({ $active }) => ($active ? '28px' : '10px')};
   height: 10px;
   border-radius: 50%;
-  border: none;
-  background: ${props => props.$active ? '#66fcf1' : 'rgba(255, 255, 255, 0.2)'};
-  box-shadow: ${props => props.$active ? '0 0 10px rgba(102, 252, 241, 0.5)' : 'none'};
+  border: 1px solid ${({ $active }) => ($active ? 'rgba(102, 252, 241, 0.45)' : 'rgba(255, 255, 255, 0.14)')};
+  background: ${({ $active }) => ($active ? 'linear-gradient(90deg, #66fcf1, #8fc9ff)' : 'rgba(255, 255, 255, 0.22)')};
+  box-shadow: ${({ $active }) => ($active ? '0 0 18px rgba(102, 252, 241, 0.5)' : 'none')};
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   
   &:hover {
-    background: ${props => props.$active ? '#66fcf1' : 'rgba(255, 255, 255, 0.5)'};
-    transform: scale(1.2);
+    background: ${({ $active }) => ($active ? 'linear-gradient(90deg, #66fcf1, #8fc9ff)' : 'rgba(255, 255, 255, 0.4)')};
+    transform: translateY(-1px);
+  }
+`;
+
+const ArrowControls = styled.div`
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+`;
+
+const ArrowButton = styled.button`
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(241, 246, 255, 0.9);
+  font-size: 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(102, 252, 241, 0.13);
+    border-color: rgba(102, 252, 241, 0.42);
+  }
+
+  &:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
   }
 `;
 
@@ -206,7 +378,7 @@ const sprintData = {
       title: '🍎 iOS Sprint',
       color: '#FF5722',
       items: [
-        'iOS 26 패러다임 개발 및 최신 기술 스택 적용',
+        'iOS 최신 패러다임 기반 개발 및 기술 스택 적용',
         '애플 워치 연동 및 홈 화면 위젯 개발',
         '유지보수와 확장을 고려한 모듈화 개발',
         'TestFlight를 통한 배포 및 QA 진행'
@@ -261,6 +433,7 @@ const Sprints = () => {
   const [activeTab, setActiveTab] = useState('dev');
   const [activeIndex, setActiveIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const currentSprintCount = sprintData[activeTab].length;
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -275,11 +448,11 @@ const Sprints = () => {
   };
 
   const handleDragEnd = (e, { offset, velocity }) => {
-    const swipeThreshold = 50; // Minimum distance to register a swipe
-    if (offset.x < -swipeThreshold && activeIndex < sprintData[activeTab].length - 1) {
-      setActiveIndex(prev => prev + 1); // Swipe left, go next
-    } else if (offset.x > swipeThreshold && activeIndex > 0) {
-      setActiveIndex(prev => prev - 1); // Swipe right, go prev
+    const swipeThreshold = 70;
+    if ((offset.x < -swipeThreshold || velocity.x < -420) && activeIndex < currentSprintCount - 1) {
+      setActiveIndex((prev) => prev + 1);
+    } else if ((offset.x > swipeThreshold || velocity.x > 420) && activeIndex > 0) {
+      setActiveIndex((prev) => prev - 1);
     }
   };
 
@@ -287,10 +460,6 @@ const Sprints = () => {
     const diff = i - activeIndex;
     const absDiff = Math.abs(diff);
     const direction = Math.sign(diff);
-
-    // Wider horizontal layout metrics
-    const xOffset = isMobile ? 180 : 380; // Spread cards further apart initially
-    const xMultiplier = isMobile ? 60 : 120; // Spread subsequent cards further
 
     if (diff === 0) {
       return {
@@ -303,14 +472,35 @@ const Sprints = () => {
       };
     }
 
+    if (isMobile) {
+      return {
+        x: direction * (220 + absDiff * 50),
+        z: -(absDiff * 90),
+        rotateY: direction * -18,
+        scale: 1 - (absDiff * 0.08),
+        opacity: absDiff > 1 ? 0 : 0.7,
+        zIndex: 10 - absDiff
+      };
+    }
+
     return {
-      x: direction * (xOffset + absDiff * xMultiplier),
-      z: -(absDiff * 100), // Less severe depth pushback
-      rotateY: direction * -35, // Less severe rotation for wider reading layout
-      scale: 1 - (absDiff * 0.05), // Slight scale down
-      opacity: absDiff > 2 ? 0 : 1, // Keep opacity high since we use dimming in CSS
-      zIndex: 10 - absDiff
+      x: direction * (340 + absDiff * 130),
+      z: -(absDiff * 130),
+      rotateY: direction * -28,
+      scale: 1 - (absDiff * 0.06),
+      opacity: absDiff > 2 ? 0 : 0.88,
+      zIndex: 12 - absDiff
     };
+  };
+
+  const handleKeyNavigation = (event) => {
+    if (event.key === 'ArrowRight' && activeIndex < currentSprintCount - 1) {
+      setActiveIndex((prev) => prev + 1);
+    }
+
+    if (event.key === 'ArrowLeft' && activeIndex > 0) {
+      setActiveIndex((prev) => prev - 1);
+    }
   };
 
   return (
@@ -325,18 +515,28 @@ const Sprints = () => {
           >
             스프린트 커리큘럼
           </Title>
+          <Subtitle
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+          >
+            실무 플로우를 압축한 트랙별 미션으로, 기획부터 구현과 배포까지 직접 완주합니다.
+          </Subtitle>
         </Header>
 
         <TabContainer>
           <Tab
-            active={activeTab === 'dev'}
+            $active={activeTab === 'dev'}
             onClick={() => handleTabChange('dev')}
+            aria-pressed={activeTab === 'dev'}
           >
             개발 스프린트
           </Tab>
           <Tab
-            active={activeTab === 'design'}
+            $active={activeTab === 'design'}
             onClick={() => handleTabChange('design')}
+            aria-pressed={activeTab === 'design'}
           >
             디자인 스프린트
           </Tab>
@@ -349,6 +549,10 @@ const Sprints = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
+            role="region"
+            aria-label={`${activeTab === 'dev' ? '개발' : '디자인'} 스프린트 캐러셀`}
+            tabIndex={0}
+            onKeyDown={handleKeyNavigation}
           >
             {sprintData[activeTab].map((sprint, idx) => (
               <CarouselCard
@@ -358,12 +562,17 @@ const Sprints = () => {
                 onClick={() => setActiveIndex(idx)}
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2}
+                dragElastic={0.14}
                 onDragEnd={handleDragEnd}
                 initial={false}
                 animate={calculateTransform(idx)}
-                transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+                transition={{ type: 'spring', stiffness: 180, damping: 24 }}
+                aria-selected={idx === activeIndex}
               >
+                <CardMeta>
+                  <TrackBadge $color={sprint.color}>Track</TrackBadge>
+                  <SlideIndex>{idx + 1} / {currentSprintCount}</SlideIndex>
+                </CardMeta>
                 <h3>{sprint.title}</h3>
                 <ul>
                   {sprint.items.map((item, i) => (
@@ -385,6 +594,22 @@ const Sprints = () => {
             />
           ))}
         </Indicators>
+        <ArrowControls>
+          <ArrowButton
+            onClick={() => setActiveIndex((prev) => Math.max(prev - 1, 0))}
+            disabled={activeIndex === 0}
+            aria-label="Previous sprint"
+          >
+            ‹
+          </ArrowButton>
+          <ArrowButton
+            onClick={() => setActiveIndex((prev) => Math.min(prev + 1, currentSprintCount - 1))}
+            disabled={activeIndex === currentSprintCount - 1}
+            aria-label="Next sprint"
+          >
+            ›
+          </ArrowButton>
+        </ArrowControls>
 
       </Container>
     </Section>
