@@ -164,7 +164,7 @@ const StatusText = styled.div`
 `;
 
 const Apply = () => {
-  const isRecruiting = false;
+  const isRecruiting = true;
 
   return (
     <Section>
