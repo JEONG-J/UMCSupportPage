@@ -340,7 +340,7 @@ const ScrollDot = styled.span`
 `;
 
 const Hero = () => {
-  const isRecruiting = true;
+  const isRecruiting = false;
   const [showScrollGuide, setShowScrollGuide] = useState(true);
 
   useEffect(() => {
