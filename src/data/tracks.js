@@ -61,7 +61,7 @@ export const trackConfigs = {
       closedButtonText: 'B TRACK 모집 준비 중',
       recruitStatusOpen: 'UMC PRODUCT B TRACK 모집 중입니다.',
       recruitStatusClosed: 'UMC PRODUCT B TRACK 모집 정보를 업데이트 중입니다',
-      applyHref: 'https://docs.google.com/forms/d/e/1FAIpQLSeSp8asQi_OIMjJWblaWDbplc1v-4xAxdysz91OTCKmrwWuNQ/viewform?usp=publish-editor',
+      applyHref: 'https://docs.google.com/forms/d/e/1FAIpQLSdkJHRZy7-nPUrMUVDbx4f_wybgMyfjt_B7t5yYPUd9zhg0KA/viewform?usp=publish-editor',
       isRecruiting: true
     },
     apply: {
@@ -73,7 +73,7 @@ export const trackConfigs = {
       closedButtonText: 'B TRACK 정보 입력 필요',
       statusOpen: '모집 중!',
       statusClosed: '모집 정보 업데이트 필요',
-      applyHref: 'https://docs.google.com/forms/d/e/1FAIpQLSeSp8asQi_OIMjJWblaWDbplc1v-4xAxdysz91OTCKmrwWuNQ/viewform?usp=publish-editor',
+      applyHref: 'https://docs.google.com/forms/d/e/1FAIpQLSdkJHRZy7-nPUrMUVDbx4f_wybgMyfjt_B7t5yYPUd9zhg0KA/viewform?usp=publish-editor',
       isRecruiting: true
     },
     recruitSections: {
