@@ -80,7 +80,7 @@ export const trackConfigs = {
       summary: {
         label: 'Quick Overview',
         duration: '2026.03 ~ 2026.08',
-        parts: 'PM · iOS · iOS Design · Android Design · Server',
+        parts: 'PM · iOS · iOS Design · Android · Android Design · Server',
         qualification: 'UMC 10기 누구나!',
         ctaText: '지금 지원하기'
       },
@@ -157,6 +157,16 @@ export const trackConfigs = {
             bullets: [
               'iOS 26에서 제시하는 새로운 디자인 패러다임과 인터페이스 흐름을 설계하고 싶은 사람',
               '실제 앱 서비스 관점에서 iOS 26 기반 디자인 시스템과 화면 구조를 만들어보고 싶은 사람'
+            ]
+          },
+          {
+            name: 'Android',
+            icon: '📱',
+            color: '#7dffa1',
+            summary: 'Clean Architecture와 실무형 구조 설계로 Android 앱을 구현하는 파트',
+            bullets: [
+              '최신 Android 개발 패러다임과 아키텍처를 바탕으로 앱을 설계하고 싶은 사람',
+              '실서비스 수준의 기능 구현과 유지보수 관점까지 경험해보고 싶은 사람'
             ]
           },
           {
