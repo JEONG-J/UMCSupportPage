@@ -229,6 +229,20 @@ export const trackConfigs = {
             ]
           },
           {
+            name: 'Android',
+            icon: '🤖',
+            color: '#7dffa1',
+            emphasis: 'Clean Architecture · MVVM · 실서비스 구현',
+            bullets: [
+              '멀티모듈 환경에서의 Clean Architecture 기반 최신 Android 개발 패러다임 학습',
+              'MVVM 패턴 기반의 체계적인 UI 상태 관리와 Presentation Layer 구조 이해',
+              'Hilt(DI)와 Navigation Component를 활용한 유연한 화면 설계 및 앱 개발 실습',
+              '자체 커스텀 UI 컴포넌트 및 Base 클래스를 활용한 효율적인 뷰 인터랙션 구현 경험',
+              'Retrofit 네트워크 통신부터 소셜 로그인, 지도, FCM 등 실무 필수 기능 연동 경험',
+              '체계적인 에러 핸들링과 리팩토링, 코드 리뷰를 통한 실제 서비스 수준의 완성도 개선'
+            ]
+          },
+          {
             name: 'Android Design',
             icon: '🤖',
             color: '#ff5fa2',
@@ -241,6 +255,20 @@ export const trackConfigs = {
               '변화하는 기능과 요구사항에 맞춰 유연하게 적용 가능한 화면 설계 역량 강화',
               '개발자 협업을 위한 디자인 가이드 및 핸드오프 경험'
             ]
+          },
+          {
+            name: 'Server',
+            icon: '🗄️',
+            color: '#46e891',
+            emphasis: 'Hexagonal Architecture · Domain Design · Service Maintenance',
+            bullets: [
+              '헥사고날 아키텍처(Port & Adapter) 기반의 계층 분리와 설계 원칙 학습',
+              'CQRS, Value Object, Facade 등 실무 아키텍처 패턴과 적용 방식 이해',
+              '도메인 간 간접 참조와 ABAC 권한 체계를 반영한 서비스 설계 경험',
+              'QueryDSL, FCM, PostGIS 등 핵심 기술을 활용한 기능 구현 실습',
+              '테스트 전략 수립과 코드/PR 컨벤션을 기반으로 한 협업 역량 강화',
+              '기존 서비스의 코드 분석부터 개선 및 기능 확장까지 실전 중심 학습'
+            ]
           }
         ]
       },
@@ -248,11 +276,11 @@ export const trackConfigs = {
         label: 'Who Should Join',
         title: '이런 분들께 추천하고, 이런 분들과 함께합니다.',
         recommended: [
-          '단순히 배우는 것을 넘어, 실제 프로덕트를 만들어보고 싶은 분',
+          '프로덕트의 기술과 실무 기준을 깊이 있게 배우고 싶은 분',
           '각 파트의 역할과 협업 방식을 실전으로 익히고 싶은 분',
           '워크북 이상의 밀도 있는 경험과 성장을 원하는 분',
           '포트폴리오로 남을 결과물을 제대로 만들어보고 싶은 분',
-          '실제 서비스에 투입되는 경험을 통해 한 단계 더 성장하고 싶은 분'
+          '다음 A TRACK까지 도전할 수 있는 기반과 역량을 쌓고 싶은 분'
         ],
         qualifications: [
           'UMC 10기 누구나',
@@ -274,7 +302,7 @@ export const trackConfigs = {
       },
       {
         q: '커리큘럼은 어떤 파트가 포함되나요?',
-        a: '현재 페이지에는 iOS, iOS Design, Android Design 커리큘럼이 반영되어 있습니다. 각 파트별 학습 항목과 실전 프로젝트 경험이 포함됩니다.'
+        a: '현재 페이지에는 PM, iOS, iOS Design, Android, Android Design, Server 커리큘럼이 반영되어 있습니다. 각 파트별 학습 항목과 실전 프로젝트 경험이 포함됩니다.'
       },
       {
         q: '지원 링크는 어디에 연결되나요?',

@@ -1515,7 +1515,7 @@ const BTrackRecruitSections = ({ track }) => {
   const overviewMetrics = [
     { no: '01', text: '문제를 정의하고 구조를 설계한 뒤 실제 구현까지 팀 단위로 이어집니다.' },
     { no: '02', text: '워크북을 넘어 실전형 기준과 협업 방식까지 몸으로 익히는 트랙입니다.' },
-    { no: '03', text: '실제 UMC PRODUCT에 참여하는 경험까지 포함된 성장 경로를 제공합니다.' }
+    { no: '03', text: '프로덕트의 기술을 익히고 지부 프로젝트와 데모데이까지 성과로 연결하는 성장 경로를 제공합니다.' }
   ];
   const guideCards = [
     { title: '이런 분들께 추천해요', items: recruitSections.guide.recommended },
@@ -1629,7 +1629,7 @@ const BTrackRecruitSections = ({ track }) => {
                 </OverviewSignalCard>
                 <OverviewSignalCard>
                   <OverviewSignalLabel>Prove</OverviewSignalLabel>
-                  <OverviewSignalValue>실제 UMC PRODUCT 참여와 데모데이까지 이어지는 결과를 남깁니다.</OverviewSignalValue>
+                  <OverviewSignalValue>프로덕트의 기술을 익혀 지부 프로젝트와 데모데이까지 성과로 증명합니다.</OverviewSignalValue>
                 </OverviewSignalCard>
               </OverviewSignalRow>
             </OverviewLeft>
